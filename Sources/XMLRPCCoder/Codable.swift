@@ -4,6 +4,21 @@ import Foundation
 import MetaSerialization
 import OrderedCollections
 
+/// XML-RPC encoding/decoding interface.
+public protocol XMLRPCCoderProtocol {
+    /// Returns an XML-RPC style XML representation of the value you supply.
+    /// - Parameter value: The value to encode as XML-RPC style XML.
+    /// - Returns: An `XMLElement` containing the encoded XML.
+    func encode(_: some Encodable) throws -> XMLElement
+
+    /// Returns a value of the type you specify, decoded from XML-RPC style XML.
+    /// - Parameters:
+    ///   - type: The type of the value to decode from the supplied XML-RPC style XML.
+    ///   - raw: An `XMLElement` containing the XML.
+    /// - Returns: A value of the specified type, if the decoder can parse the XML.
+    func decode<D: Decodable>(toType _: D.Type, from _: XMLElement) throws -> D
+}
+
 /// An object that encodes instances of a data type as XML-RPC style XML and decodes instances of a data type from
 ///  XML-RPC style XML.
 public class XMLRPCCoder {
@@ -17,7 +32,9 @@ public class XMLRPCCoder {
             decodeToMeta: convertToSwift
         )
     }
+}
 
+extension XMLRPCCoder: XMLRPCCoderProtocol {
     /// Returns an XML-RPC style XML representation of the value you supply.
     /// - Parameter value: The value to encode as XML-RPC style XML.
     /// - Returns: An `XMLElement` containing the encoded XML.
